@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Evaluation;
+use App\Event;
+use App\Participant;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller
 {
@@ -19,7 +23,16 @@ class UsersController extends Controller
      */
     public function index()
     {
-        return view('user.index');
+         // get the login user
+         $loginUser = Auth::user()->id;
+
+         $user = User::find($loginUser);
+         
+         $events = Event::all();
+         
+         $evaluations = Evaluation::where('user_id', $loginUser)->where('is_evaluate', true)->get();
+ 
+        return view('user.index', compact('user', 'events', 'evaluations'));
     }
 
     /**
@@ -87,4 +100,6 @@ class UsersController extends Controller
     {
         //
     }
+
+
 }

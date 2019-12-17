@@ -5,19 +5,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Department extends Model
 {
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    // protected $table = 'departments';
-
     // allow mass assignable:
     protected $guarded = [];
 
     // relationships
-    public function users(){
+    public function users() {
+
         return $this->hasMany(User::class);
+    }
+
+    public function courses() {
+        
+        return $this->hasMany(Course::class);
     }
 
 }

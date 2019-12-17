@@ -16,7 +16,7 @@ class Adminmiddleware
      */
     public function handle($request, Closure $next)
     {
-        if(Auth::user()->role == 'admin'){
+        if(Auth::user()->role == 'admin' || Auth::user()->role == 'organizer'){
             return $next($request);
         }else{
             return redirect()->back()->with('error', 'Unauthorized Page Access');

@@ -53,7 +53,6 @@ class Kernel extends HttpKernel
     protected $routeMiddleware = [
         'auth' => \App\Http\Middleware\Authenticate::class,
         'admin' => \App\Http\Middleware\Adminmiddleware::class,
-        'organizer' => \App\Http\Middleware\Organizermiddleware::class,
         'user' => \App\Http\Middleware\Usermiddleware::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,

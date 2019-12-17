@@ -33,7 +33,7 @@ class LoginController extends Controller
     {
         switch (Auth::user()->role) {
             case 'admin':
-                return '/admin';
+                return '/dashboard/event';
                 break;
             case 'organizer':
                 return '/organizer';

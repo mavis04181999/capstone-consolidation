@@ -25,17 +25,30 @@ class UpdateUserRequest extends FormRequest
     {
         return [
             'user_id' => ['required', 'numeric'],
-            'firstname' => ['required', 'min:3'],
+
+            'email' => ['required', 'email'],
+            'title' => ['sometimes', 'nullable'],
+            'firstname' => ['required', 'min: 3'],
+
             'middlename' => ['sometimes', 'nullable', 'min: 3'],
-            'lastname' => ['required', 'min:3'],
-            'email' => ['required', 'email', 'min:3'],
-            'contactno' => ['sometimes', 'nullable', 'alpha_dash', 'min:3'],
-            'address' => ['sometimes', 'min:3'],
-            'department' => ['sometimes', 'nullable'],
-            'course' => ['sometimes', 'nullable', 'min:3', 'exists:courses,abbr'],
-            'section' => ['sometimes', 'nullable', 'min:3', 'alpha_dash', 'exists:sections,section'],
+            'lastname' => ['required', 'min: 3'],
+            'nickname' => ['sometimes', 'nullable', 'min: 3'],
+            'certificate_name' => ['sometimes', 'nullable', 'min: 3'],
+
+            'contactno' => ['sometimes', 'nullable'],
+            'address' => ['sometimes', 'nullable'],
+            'occupation' => ['sometimes', 'nullable'],
+
+            'sex' => ['sometimes', 'nullable'],
+            'birthday' => ['sometimes', 'nullable'],
+            'department' => ['sometimes', 'nullable', 'numeric'],
+            
+            'course' => ['sometimes', 'nullable', 'numeric'],
+            'section' => ['sometimes', 'nullable', 'numeric'],
             'year' => ['sometimes', 'nullable', 'numeric'],
-            'password' => ['sometimes', 'nullable', 'min:3']
+            'institution' => ['sometimes', 'nullable', 'min: 3'],
+            
+            'password' => ['sometimes', 'nullable', 'min: 3']
         ];
     }
 }

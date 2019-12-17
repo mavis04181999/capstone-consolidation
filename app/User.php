@@ -10,13 +10,6 @@ class User extends Authenticatable
 {
     use Notifiable;
     /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    // protected $table = 'users';
-
-    /**
      * The attributes that are mass assignable.
      *
      * @var array
@@ -50,23 +43,32 @@ class User extends Authenticatable
 
     // scope functions
     public function scopeUser($query){
+
         return $query->where('role', 'user');
     }
 
     public function scopeOrganizer($query){
+
         return $query->where('role', 'organizer');
     }
     // relationships
     public function department(){
+
         return $this->belongsTo(Department::class);
     }
     
     public function course(){
+
         return $this->belongsTo(Course::class);
     }
 
     public function section(){
+        
         return $this->belongsTo(Section::class);
+    }
+
+    public function events(){
+        return $this->belongsTo(Event::class);
     }
     
 }

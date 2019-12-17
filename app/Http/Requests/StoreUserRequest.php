@@ -24,18 +24,30 @@ class StoreUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'username' => ['required', 'alpha_dash', 'min:3', 'unique:users'],
-            'role' => ['required'],
-            'firstname' => ['required', 'min:3'],
+            'email' => ['required', 'email', 'unique:users,email'],
+            'title' => ['sometimes', 'nullable'],
+            'firstname' => ['required', 'min: 3'],
+
             'middlename' => ['sometimes', 'nullable', 'min: 3'],
-            'lastname' => ['required', 'min:3'],
-            'email' => ['required', 'email', 'min:3', 'unique:users'],
-            'contactno' => ['sometimes', 'alpha_dash', 'min:3'],
-            'address' => ['sometimes', 'min:3'],
-            'department' => ['sometimes', 'nullable'],
-            'course' => ['sometimes', 'nullable', 'min:3'],
-            'section' => ['sometimes', 'nullable', 'min:3', 'alpha_dash'],
+            'lastname' => ['required', 'min: 3'],
+            'nickname' => ['sometimes', 'nullable'],
+
+            'certificate_name' => ['sometimes', 'nullable', 'min:3'],
+            'contactno' => ['sometimes', 'nullable'],
+            'address' => ['sometimes', 'nullable'],
+
+            'occupation' => ['sometimes', 'nullable'],
+            'sex' => ['sometimes', 'nullable'],
+            'birthday' => ['sometimes', 'nullable'],
+
+            'department' => ['sometimes', 'nullable', 'numeric'],
+            'course' => ['sometimes', 'nullable', 'numeric'],
+            'section' => ['sometimes', 'nullable', 'numeric'],
             'year' => ['sometimes', 'nullable', 'numeric'],
+
+            'institution' => ['sometimes', 'nullable', 'min: 3'],
+            'username' => ['required', 'alpha_dash', 'min: 3', 'unique:users,username'],
+            'role' => ['required'],
         ];
     }
 }

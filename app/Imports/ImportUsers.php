@@ -29,10 +29,12 @@ class ImportUsers implements ToModel, WithHeadingRow, WithBatchInserts, WithChun
         $middlename = ucwords($row['middlename']);
         $lastname = ucwords($row['lastname']);
         $email = $row['email'];
+
+        $institution = $row['institution'];
         $department = $this->getDepartmentID(Str::upper($row['department']));
         $course = $this->getCourseID(Str::upper($row['course']));
-        $year = (int) $row['year'];
         $section = $this->getSectionID(Str::upper($row['section']));
+        $year = (int) $row['year'];
 
         $contactno = $row['contactno'];
         $address = ucwords($row['address']);
@@ -46,6 +48,7 @@ class ImportUsers implements ToModel, WithHeadingRow, WithBatchInserts, WithChun
             'middlename' => $middlename,
             'lastname'=> $lastname,
             'email' => $email,
+            'institution' => $institution,
             'department_id' => $department,
             'course_id' => $course,
             'year' => $year,
@@ -61,12 +64,16 @@ class ImportUsers implements ToModel, WithHeadingRow, WithBatchInserts, WithChun
     public function rules() : array{
         return [
             'firstname' => ['required', 'min:3'],
-            'middlename' => ['sometimes', 'min:3'],
+            'middlename' => ['sometimes', 'nullable', 'min:3'],
             'lastname' => ['required', 'min:3'],
             'email' => ['required', 'unique:users'],
+            'institution' => ['required', 'nullable', 'min: 3'],
+            'department' => ['sometimes', 'nullable', 'exists:departments,abbr'],
+            'course' => ['sometimes', 'nullable', 'exists:courses,abbr'],
+            'section' => ['sometimes', 'nullable', 'exists:sections,section'],
             'username' => ['required', 'unique:users', 'min:3'],
-            'contactno' => ['sometimes', 'alpha_dash', 'nullable'],
-            'year' => ['numeric']
+            'contactno' => ['sometimes', 'nullable', 'alpha_dash'],
+            'year' => ['sometimes', 'nullable', 'numeric'],
         ];
     }
 
@@ -92,10 +99,11 @@ class ImportUsers implements ToModel, WithHeadingRow, WithBatchInserts, WithChun
     public function getDepartmentID($department){
         if ($department == null) {
             return null;
-        }
+        }else {
+            $department = Department::where('abbr', $department)->first();
 
-        $department = Department::where('abbr', $department)->first();
-        return $department->id;
+            return $department->id;
+        }
     }
 
     public function getCourseID($course){

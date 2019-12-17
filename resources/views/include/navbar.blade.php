@@ -1,7 +1,8 @@
 <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
     <div class="container">
         <a class="navbar-brand" href="{{ url('/') }}">
-            Centralized Event Management System
+            <small><img src="{{ asset('storage/logo/cspc-logo.png')}}" height="40" width="40" alt=""></small>
+            <small class="text-sm text-dark">Centralized Event Management System</small>
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
             <span class="navbar-toggler-icon"></span>

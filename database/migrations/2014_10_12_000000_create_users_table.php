@@ -15,28 +15,39 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('role');
 
+            $table->string('email')->unique();
+            $table->string('title')->nullable();
             $table->string('firstname');
+
             $table->string('middlename')->nullable();
             $table->string('lastname');
+            $table->string('nickname')->nullable();
 
-            $table->text('address')->nullable();
+            $table->string('certificate_name')->nullable();
             $table->string('contactno')->nullable();
-            $table->string('email')->unique();
+            $table->string('address')->nullable();
 
-            $table->unsignedBigInteger('department_id')->nullable();
-            $table->unsignedBigInteger('course_id')->nullable();
-            $table->unsignedBigInteger('section_id')->nullable();
+            $table->string('occupation')->nullable();
+            $table->string('sex')->nullable();
+            $table->string('birthday')->nullable();
+
+
+            $table->string('department_id')->nullable();
+            $table->string('course_id')->nullable();
+            $table->string('section_id')->nullable();
             $table->string('year')->nullable();
 
             $table->string('username')->unique();
-            $table->string('temppassword');
             $table->string('password');
-            $table->string('role');
+            $table->string('temppassword');
+            $table->string('institution')->nullable();
 
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
+
         });
     }
 

@@ -28,8 +28,8 @@
      * @typ {Object}
      */
     var defaultConfig = {
-        perPage: 10,
-        perPageSelect: [5, 10, 15, 20, 25],
+        perPage: 5,
+        perPageSelect: [5, 25, 50, 75, 100],
 
         sortable: true,
         searchable: true,
