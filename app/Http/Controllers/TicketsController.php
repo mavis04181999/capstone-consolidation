@@ -96,7 +96,9 @@ class TicketsController extends Controller
 
     public function pdfcertificate(Event $event, Request $request) {
 
-        $participant = Participant::with('user')->where('user_id', Auth::user()->id)->first();
+        $participant = User::where('id', Auth::user()->id)->first();
+
+        // dd($participant);
 
         $pdf = PDF::loadView('event.pdfcertificate', compact('event', 'participant'))->setPaper('letter', 'landscape')->setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif']);
         

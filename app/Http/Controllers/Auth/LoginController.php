@@ -38,10 +38,12 @@ class LoginController extends Controller
             case 'organizer':
                 return '/organizer';
                 break;
-            // the defualt will be user role
-            default:
+            case 'user':
                 return '/home';
-                break;
+            // the defualt will be user role
+            // default:
+            //     return '/home';
+            //     break;
         }
     }
 

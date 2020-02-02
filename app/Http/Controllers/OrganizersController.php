@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Event;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class OrganizersController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('organizer');
+        $this->middleware('admin');
     }
     /**
      * Display a listing of the resource.
@@ -19,7 +22,9 @@ class OrganizersController extends Controller
      */
     public function index()
     {
-        return view('organizer.index');
+        $events = Event::latest()->with('organizer')->where('archive', 0)->limit(10)->get();
+        
+        return view('organizer.index', compact('events'));
     }
 
     /**

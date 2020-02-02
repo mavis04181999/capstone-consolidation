@@ -16,6 +16,7 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
     <link rel="stylesheet" href="{{ asset('template/sb-admin-2.css') }}">
 
     <!-- Google Fonts -->

@@ -14,7 +14,7 @@
                 <small><img src="{{ asset('storage/logo/cspc-logo.png')}}" height="50" width="50" alt=""></small>
             </div>
             <div class="sidebar-brand-text mr-1">
-                <small class="text-xs" style="font-size: 10px">Centralized Event Management System</small>
+                <small style="font-size: 12px">Event Evaluation System</small>
             </div>
         </a>
 
@@ -78,27 +78,22 @@
                     <!-- Nav Item - User Information -->
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="mr-2 d-none d-lg-inline text-gray-600 small"><i class="fa fa-2x fa-user-secret mr-1"></i> {{  Auth::user()->firstname }}</span>
-                        {{-- <img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60"> --}}
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small"><i class="fa fa-2x fa-user-circle-o mr-1"></i> {{  Auth::user()->firstname }}</span>                        
                         </a>
 
                         <!-- Dropdown - User Information -->
-                        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Profile
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">                            
+                            <a class="dropdown-item" href="{{ route('view.archives') }}">
+                                <i class="fa fa-archive fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Archives
                             </a>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                            <a class="dropdown-item" href="{{ route('admin.settings') }}">
+                                <i class="fa fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
                                 Settings
-                            </a>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Activity Log
                             </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                <i class="fa fa-sign-out fa-sm fa-fw mr-2 text-gray-400"></i>
                                 Logout
                             </a>
                         </div>
@@ -148,16 +143,12 @@
                                 @foreach ($users as $user)
                                 <tr>
                                     <td><input type="checkbox" class="check-user" name="user[{{$user->id}}]" id="user[{{$user->id}}]"></td>
-                                    <td>{{ $user->firstname }}</td>
-                                    <td>{{ $user->lastname }}</td>
-                                    <td>{{ $user->email }}</td>
-                                    <td>
-                                        <?php echo $course = ($user->course == null) ? null : $user->course->abbr ; ?>
-                                    </td>
-                                    <td>
-                                        <?php echo $section = ($user->section == null) ? null : $user->section->section ; ?>
-                                    </td>
-                                    <td>{{ $user->temppassword }}</td>
+                                    <td>{{ $user->firstname ? $user->firstname : '' }}</td>
+                                    <td>{{ $user->lastname ? $user->lastname : '' }}</td>
+                                    <td>{{ $user->email ? $user->email : ''}}</td>
+                                    <td>{{ $user->course ? $user->course->abbr : '' }}</td>
+                                    <td>{{ $user->section ? $user->section->section : '' }}</td>             
+                                    <td>{{ $user->temppassword ? $user->temppassword : '' }}</td>
                                     <td>
                                         <button onclick="updateUser(event)" type="button" class="btn btn-sm btn-info"
                                         data-user="{{ $user }}"
@@ -181,6 +172,8 @@
                         </form>
                         </div>
                     </div>
+
+
 
                     <div class="row">
                         <div class="col-sm-12">
@@ -234,7 +227,7 @@
             
 <!-- Scroll to Top Button-->
 <a class="scroll-to-top rounded" href="#page-top">
-    <i class="fas fa-angle-up"></i>
+    <i class="fa fa-angle-up"></i>
 </a>
 
 <!-- Logout Modal-->

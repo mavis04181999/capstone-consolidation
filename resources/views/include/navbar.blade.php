@@ -2,7 +2,7 @@
     <div class="container">
         <a class="navbar-brand" href="{{ url('/') }}">
             <small><img src="{{ asset('storage/logo/cspc-logo.png')}}" height="40" width="40" alt=""></small>
-            <small class="text-sm text-dark">Centralized Event Management System</small>
+            <small class="text-sm text-dark">Event Evaluation System</small>
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
             <span class="navbar-toggler-icon"></span>
@@ -33,6 +33,10 @@
                         </a>
 
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{{ route('show.profile', ['user'  => Auth::user()->id ]) }}">
+                             {{ __('Profile') }}
+                            </a>
+
                             <a class="dropdown-item" href="{{ route('logout') }}"
                                onclick="event.preventDefault();
                                              document.getElementById('logout-form').submit();">
@@ -43,6 +47,8 @@
                                 @csrf
                             </form>
                         </div>
+
+                        
                     </li>
                 @endguest
             </ul>

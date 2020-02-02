@@ -77,9 +77,11 @@ class FormsController extends Controller
      * @param  \App\Form  $form
      * @return \Illuminate\Http\Response
      */
-    public function show(Form $form)
+    public function show(Event $event, Form $form)
     {
-        //
+        $forms = Form::where('event_id', $event->id)->orderBy('order')->get();
+
+        return view('form.show', compact('event', 'forms'));
     }
 
     /**

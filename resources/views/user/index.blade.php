@@ -26,7 +26,7 @@
                                             <h3 class="card-title">
                                             <i class="fa fa-calendar-check-o"></i> Event: {{$event->event_name}}
                                             </h3>
-                                            <small>Organizer: {{$event->organizer->firstname}} {{$event->organizer->lastname}}</small>
+                                            {{-- <small>Organizer: {{$event->organizer->firstname}} {{$event->organizer->lastname}}</small> --}}
                                             <a href="{{route('ticket.show', ['ticket' => $evaluation->ticket->id])}}">
                                             <button
                                             class="btn btn-outline-primary float-right"

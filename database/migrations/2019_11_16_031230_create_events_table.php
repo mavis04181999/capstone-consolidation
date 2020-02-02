@@ -26,7 +26,6 @@ class CreateEventsTable extends Migration
             $table->string('event_certificate')->nullable();
             $table->string('event_eventid')->nullable();
             $table->string('event_image')->nullable();
-            $table->string('event_type');
 
             $table->string('location')->nullable();
             $table->date('start_date')->nullable();
@@ -35,6 +34,7 @@ class CreateEventsTable extends Migration
             $table->string('max_participants')->nullable();
             $table->string('allow_prereg')->nullable();
             $table->string('prereg_slot')->nullable();
+            $table->string('prereg_validity');
             $table->string('fee')->nullable();
 
             $table->string('form_type')->nullable();

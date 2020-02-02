@@ -24,7 +24,7 @@
                                 <option value="" disabled>Select Organizer</option>
                                 @if (isset($organizers))
                                 @foreach ($organizers as $organizer)
-                                <option value="{{$organizer->id}}">{{$organizer->firstname}} {{$organizer->lastname}}</option>
+                                <option value="{{$organizer->id}}">{{ $organizer->firstname ? $organizer->lastname.", ".$organizer->firstname : $organizer->username }}</option>
                                 @endforeach
                                 @else
                                 <option value=""></option>
@@ -68,10 +68,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-5">
-                            <label title="Fee" for="fee" class="col-form-label-sm">Fee <small>*</small></label>
-                            <input type="number" name="fee" id="create-event-fee" class="form-control" placeholder="P 0.00">
-                        </div>
                     </div>
                     <div class="row">
                         <div class="form-group-sm col-sm-10 offset-1">
@@ -99,7 +95,7 @@
             
             <div class="modal-header justify-content-between">
                 <h5 class="modal-title" id="update-event-modal-label">Update Event: </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-d  ismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
             
             <small class="text-right mx-3 mt-3"><small class="alert-danger">*</small> required to save * required to complete</small>
@@ -120,7 +116,8 @@
                                 <option value="" disabled>Select Organizer</option>
                                 @if (isset($organizers))
                                 @foreach ($organizers as $organizer)
-                                <option value="{{$organizer->id}}">{{$organizer->firstname}} {{$organizer->lastname}}</option>
+                                {{-- if organizer is null use his / her username --}}
+                                <option value="{{$organizer->id}}">{{ $organizer->firstname ? $organizer->lastname.", ".$organizer->firstname : $organizer->username }}</option>
                                 @endforeach
                                 @else
                                 <option value=""></option>
@@ -133,13 +130,13 @@
                         <div class="form-group-sm col-sm-5 offset-1">
                             <label title="Department" for="department" class="col-form-label-sm">Department: <small>*</small></label>
                             <select name="department_id" id="update-event-department_id" class="form-control">
-                                <option value="">Select Department</option>
+                                <option value="" disabled>Select Department</option>
                                 @if (isset($departments))
-                                @foreach ($departments as $department)
-                                <option value="{{$department->id}}">{{$department->abbr}}</option>
-                                @endforeach
+                                    @foreach ($departments as $department)
+                                        <option value="{{$department->id}}">{{$department->abbr}}</option>
+                                    @endforeach
                                 @else
-                                <option value=""></option>
+                                    <option value=""></option>
                                 @endif
                             </select>
                         </div>
@@ -167,14 +164,10 @@
                         <div class="col-sm-5">
                             <div class="row">
                                 <div class="col-sm-6">
-                                    <label title="Fee" for="fee" class="col-form-label-sm">Fee <small>*</small></label>
-                                    <input type="number" name="fee" id="update-event-fee" class="form-control" placeholder="P 0.00">
-                                </div>
-                                <div class="col-sm-6">
                                     <label title="Status" for="status" class="col-form-label-sm">Status <small>*</small></label>
                                     <select name="status" id="update-event-status" class="form-control">
-                                        <option value="active">Active</option>
-                                        <option value="inactive">Inactive</option>
+                                        <option value="Active">Active</option>
+                                        <option value="Inactive">Inactive</option>
                                     </select>
                                 </div>
                             </div>
@@ -227,6 +220,64 @@
     </div>
 </div>
 {{-- end: delete event modal --}}
+
+
+{{-- start: archive event modal --}}
+<div id="archive-event-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="archive-event-modal-label">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            
+            <div class="modal-header justify-content-between">
+                <h5 class="modal-title" id="archive-event-modal-label">Archive Event: <span id="archive-event-name"></span></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            
+            <form id="archive-event-form" action="{{ route('archive.event') }}" method="post">
+                @csrf
+                @method('patch')
+                <div class="modal-body">
+                    <input type="hidden" id="archive-event-event_id" name="event_id">
+                    <p>Are you sure?</p>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Archive</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{{-- end: archive event modal --}}
+
+
+{{-- start: unarchive event modal --}}
+<div id="unarchive-event-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="unarchive-event-modal-label">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            
+            <div class="modal-header justify-content-between">
+                <h5 class="modal-title" id="unarchive-event-modal-label">Unarchive Event: <span id="unarchive-event-name"></span></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            
+            <form id="unarchive-event-form" action="{{ route('unarchive.event') }}" method="post">
+                @csrf
+                @method('patch')
+                <div class="modal-body">
+                    <input type="hidden" id="unarchive-event-event_id" name="event_id">
+                    <p>Are you sure?</p>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Unarchive</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{{-- end: archive event modal --}}
 
 {{-- start: feature event modal --}}
 <div id="feature-event-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="feature-event-modal-label">

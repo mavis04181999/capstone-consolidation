@@ -9,7 +9,7 @@
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
         <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('admin.index') }}">
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="">
             <div class="sidebar-brand-icon">
                 <small><img src="{{ asset('storage/logo/cspc-logo.png')}}" height="50" width="50" alt=""></small>
             </div>
@@ -23,30 +23,55 @@
 
         <!-- Heading -->
         <div class="sidebar-heading">
-            <i class="fa fa-user-circle-o mr-2"></i>Admin Dashboard
+            Manage Event:
         </div>
 
-        <!-- Nav Item - Charts -->
         <li class="nav-item active">
-            <a class="nav-link" href="{{ route('admin.index') }}">
+            <a class="nav-link" href="#">
                 <i class="fa fa-home"></i>
                 <span>Main Dashboard</span>
             </a>
         </li>
 
-        <!-- Nav Item - Charts -->
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('admin.user') }}">
-                <i class="fa fa-users"></i>
-                <span>User Dashboard</span>
+            <a class="nav-link" href="#">
+                <i class="fa fa-calendar-check-o"></i>
+                <span>Attendance</span>
             </a>
         </li>
 
-        <!-- Nav Item - Charts -->
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('admin.organizer') }}">
-                <i class="fa fa-users"></i>
-                <span>Organizer Dashboard</span>
+            <a class="nav-link" href="#">
+                <i class="fa fa-calendar-minus-o"></i>
+                <span>Event Profile</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('index.participants', ['event' => $event->id]) }}">
+                <i class="fa fa-users"></i> 
+                <span>Participants</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <i class="fa fa-usd"></i>
+                <span>Payment Logs</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <i class="fa fa-cog"></i>
+                <span>Event Setting</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('admin.index') }}">
+                <i class="fa fa-arrow-left"></i>
+                <span>Return Admin</span>
             </a>
         </li>
 
@@ -55,7 +80,7 @@
 
         <!-- Sidebar Toggler (Sidebar) -->
         <div class="text-center d-none d-md-inline">
-            <button class="rounded-circle border-0" id="sidebarToggle"> </button>
+            <button class="rounded-circle border-0" id="sidebarToggle"></button>
         </div>
 
     </ul>
@@ -83,11 +108,7 @@
 
                         <!-- Dropdown - User Information -->
                         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                            <a class="dropdown-item" href="#">
-                                <i class="fa fa-user-circle-o fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Profile
-                            </a>
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="{{ route('view.archives') }}">
                                 <i class="fa fa-archive fa-sm fa-fw mr-2 text-gray-400"></i>
                                 Archives
                             </a>
@@ -106,15 +127,44 @@
 
             <!-- Begin Page Content -->
 
+            {{-- start: container fluid --}}
             <div class="container-fluid">
 
                 @include('include.messages')
-                
-                {{-- standard form builder vue script here --}}
-                <standard-form-builder event_id="{{ $event->id }}" event_name="{{ $event->event_name }}" ></standard-form-builder>
-                
+
+                <div class="row mb-4 justify-content-between">
+                    <div class="row col-sm-6">
+                        <h3 class="h3 mb-0 text-gray-800"><i class="fa fa-calendar-check-o"></i> Event: {{$event->event_name}}</h3>
+                    </div>
+                </div>
+
+                @foreach ($forms as $form)
+                 <div class="card">
+                    <h1></h1>
+                    <div class="card-body">
+                        @if ($form->input_type == "comment")
+                        <div class="form-group">
+                            <label for="{{$form->question}}">{{$form->question}}</label>
+                            {{-- <input class="form-control" type="text" name="answer[{{$form->id}}]" id="answer[{{$form->id}}]" placeholder="(optional)"> --}}
+                            <textarea name="answer[{{$form->id}}]" id="answer[{{$form->id}}]" cols="10" rows="5" class="form-control" placeholder="Comments and Recommendation (optional)"></textarea>
+                        </div>
+                        @else
+                        <label for="">{{$form->question}}</label>
+                        @isset($form->option)
+                        @foreach ($form->option as $option)
+                        <div class="form-group">                                 
+                            <input type="radio" name="answer[{{$form->id}}]" id="answer[{{$form->id}}]" value="{{$option->value}}" required>
+                            <label class="form-control-sm" for="{{$option->label}}">{{$option->label}}</label>
+                        </div>
+                        @endforeach
+                        @endisset  
+                        @endif
+                    </div>
+                </div>
+                <hr>
+                @endforeach
             </div>
-            <!-- /.container-fluid -->
+            <!-- end: container-fluid -->
 
         </div>
         <!-- End of Main Content -->
@@ -137,7 +187,7 @@
             
 <!-- Scroll to Top Button-->
 <a class="scroll-to-top rounded" href="#page-top">
-    <i class="fa fa-angle-double-up"></i>
+    <i class="fas fa-angle-up"></i>
 </a>
 
 <!-- Logout Modal-->
@@ -169,12 +219,4 @@
     </div>
 </div>
         
-@endsection
-
-@section('scripts')
-
-<script>
-    console.log('standard form builder loaded successfully');
-</script>
-
 @endsection

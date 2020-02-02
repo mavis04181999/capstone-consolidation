@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Evaluation;
 use App\Event;
+use App\Participant;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -37,57 +39,63 @@ class EvaluationsController extends Controller
      */
     public function store(Request $request)
     {
-        // get the login user:
-        $user_id = strval(Auth::user()->id);
-        //validate the event_code
-        $event_code = $request->validate([
-            'event_code' => 'required'
-            ]);
-            // search the event code and get the event offset problem
-            $event = Event::where('event_code', $event_code)->first();
-            if(empty($event)){
-                return redirect()->back()->with('error', 'Invalid Event Code');
+        // validate the event code
+        $validate = $request->validate([
+            'event_code' => ['required', 'exists:events,event_code']
+        ]);
+
+        $user_id = Auth::user()->id;
+
+        // find the event code and get the event
+        $event = Event::where('event_code', $request->event_code)->first();
+        
+        // check if the event code is valid
+        if ($request->event_code == $event->event_code) {
+            // check first if the user register and attend the event in the participants table
+            $participant = Participant::where('user_id', $user_id)->where('event_id', $event->id)->first();
+            
+            // check first if empty
+            if (empty($participant)) {
+                return back()->with('error', 'Invalid participant');
             }
-            $event = Event::find($event->id);
             
-            // dd($event_code['event_code'] == $event->event_code);
-            
-            // get the validate code and check if the same of the event search
-            if($event_code['event_code'] == $event->event_code){
-                
-                $evaluation = Evaluation::where('user_id', $user_id)->where('event_id', $event->id)->first();
-                
-                if (empty($evaluation)) {
-                    // dd("true", $evaluation);
-                    // if has no evaluation create new evaluation data
-                    $data = [
+            if ($participant->is_register == true and $participant->is_attend == true) {
+                 // check if the user has evaluation
+                $user_evaluation = Evaluation::where('user_id', $user_id)->where('event_id', $event->id)->first();
+                // if the user has no evaluation
+                if (empty($user_evaluation)) {
+
+                    $create_evaluation = Evaluation::create([
                         'user_id' => $user_id,
                         'event_id' => $event->id,
                         'is_evaluate' => false,
-                    ];
-                    // commit create
-                    $evaluation = Evaluation::create($data);
-                    if($evaluation) {
-                        return redirect()->route('evaluates.create', ['evaluation' => $evaluation->id]);
+                    ]);
+
+                    if ($create_evaluation) {
+                        // evaluate the event
+                        return redirect()->route('evaluates.create', ['evaluation' => $create_evaluation->id]);
                     }
-                    
-                    
-                } else {
-                    // if there is an evaluation
-                    // and the is evaluate is true redirect to the ticket code
-                    if ($evaluation->is_evaluate == true) {
-                        // dd("true", $evaluation, $evaluation->ticket->ticket_code);
-                        return redirect()->route('ticket.show', ['ticket' => $evaluation->ticket->id]);
-                    } else {
-                        //    dd("false", $evaluation);
-                        return redirect()->route('evaluates.create', ['evaluation' => $evaluation->id]);
-                    }
-                    
                 }
-                
-            }else {
-                return redirect()->back()->with('error', 'Invalid Event Code');
+
+                // if the user has evaluation and already evaluate the event
+                if ($user_evaluation->is_evaluate == true) {
+                    // redirect to the ticket
+                    return redirect()->route('ticket.show', ['ticket' => $user_evaluation->ticket->id]);
+                } else {
+                // if the user has evaluation but not yet evaluate the event
+                    return redirect()->route('evaluates.create', ['evaluation' => $user_evaluation->id]);
+                }
+
+            } else {
+                // if the user is not register and not attend to the event
+                return back()->with('error', 'Something is wrong, either you did not register or did not attend to the event');
             }
+            
+        } else {
+            // invalid event code
+            return back()->with('error', 'Invalid event code');
+        }
+        
     }
 
     /**

@@ -72,7 +72,7 @@
                         </a>
 
                         <!-- Dropdown - User Information -->
-                        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">                           
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">                            
                             <a class="dropdown-item" href="#">
                                 <i class="fa fa-archive fa-sm fa-fw mr-2 text-gray-400"></i>
                                 Archives
@@ -99,7 +99,7 @@
 
                 <section>
                     <div class="row justify-content-between">
-                        <h4 class="text-dark"><i class="fa fa-users mr-1"></i> {{$event->event_name}}: Registration</h4>                        
+                        <h4 class="text-dark"><i class="fa fa-users mr-1"></i> {{$event->event_name}}: Payment Collection</h4>
                     </div>
 
                     {{-- event image --}}
@@ -114,45 +114,26 @@
                     <hr style="height: 25px">
 
                     <div class="col-sm-12">
-                        <form action="{{ route('update.registration', ['event' => $event->id]) }}" method="post">
-                            @csrf
-                            @method('patch')
+                        <form action="{{ route('store.payment', ['event' => $event->id]) }}" method="post">
+                            @csrf                    
                             <input type="hidden" name="event_id" value="{{ $event->id }}">
                             <div class="row justify-content-center">
                                 <div class="form-group-sm col-sm-4 d-flex mb-3">
                                     <label for="" class="col-form-label-sm"><small><i class="fa fa-user-circle"></i></small></label>
-                                    <input type="text" class="form-control ml-3" name="username" placeholder="Username">
-                                </div>
-                            </div>
-                            <div class="row justify-content-center">
-                                <div class="form-group-sm col-sm-4 d-flex mb-3">
-                                    <label for="Certificate" class="col-form-label-sm"><small><i class="fa fa-envelope"></i></small></label>
-                                    <input type="text" class="form-control ml-3" name="certificate_name" placeholder="Certificate Name">
-                                </div>
-                            </div>
-                            <div class="row justify-content-center">
-                                <div class="form-group-sm col-sm-4 d-flex mb-3">
-                                    <label for="Nickname" class="col-form-label-sm"><small><i class="fa fa-user-circle" ></i></small></label>
-                                    <input type="text" class="form-control ml-3" name="nickname" placeholder="Nickname">
-                                </div>
-                            </div>
-                            <div class="row justify-content-center">
-                                <div class="form-group-sm col-sm-4 d-flex mb-3">
-                                    <label for="Receipt" class="col-form-label-sm"><small><i class="fa fa-tasks"></i></small></label>
-                                    <input type="text" class="form-control ml-3" name="receipt" placeholder="Receipt">
+                                    <input type="text" class="form-control ml-3" name="username" placeholder="Username/ID">
                                 </div>
                             </div>
 
                             <div class="row justify-content-center">
-                                <div class="form-group-sm col-sm-4 d-flex">
-                                    <label for="password" class="col-form-label-sm"><small><i class="fa fa-key"></i></small></label>
-                                    <input type="password" class="form-control ml-3" name="password" placeholder="Password">
+                                <div class="form-group-sm col-sm-4 d-flex mb-3">
+                                    <label for="" class="col-form-label-sm"><small><i class="fa fa-qrcode"></i></small></label>
+                                    <input type="text" class="form-control ml-3" name="receipt" placeholder="Receipt">
                                 </div>
                             </div>
                             
                             <div class="row justify-content-center">
                                 <div class="form-group-sm col-sm-4">
-                                    <button type="submit" class="btn btn-primary my-3">Register to Event</button>
+                                    <button type="submit" class="btn btn-primary my-3">Payment</button>
                                 </div>
                             </div>
                         </form>

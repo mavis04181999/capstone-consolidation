@@ -28,16 +28,15 @@ class UpdateEventRequest extends FormRequest
             'event_name' => ['required', 'min: 3'],
             'organizer_id' => ['required', 'numeric', 'exists:users,id'],
             'location' => ['sometimes', 'nullable', 'min:3'],
-            'event_type' => ['required', 'numeric'],
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date'],
             'department_id' => ['sometimes', 'nullable', 'numeric', 'exists:departments,id'],
             'max_participants' => ['sometimes', 'nullable'],
-            'allow_prereg' => ['required', 'numeric'],
+            'allow_prereg' => ['sometimes', 'nullable', 'numeric'],
             'prereg_slot' => ['sometimes', 'nullable'],
             'fee' => ['sometimes', 'nullable'],
             'event_overview' => ['sometimes', 'nullable'],
-            'status' => ['required']
+            'status' => ['sometimes', 'nullable']
         ];
     }
 }

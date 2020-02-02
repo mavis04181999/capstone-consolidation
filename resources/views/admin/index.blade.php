@@ -14,7 +14,7 @@
                 <small><img src="{{ asset('storage/logo/cspc-logo.png')}}" height="50" width="50" alt=""></small>
             </div>
             <div class="sidebar-brand-text mr-1">
-                <small class="text-xs" style="font-size: 10px">Centralized Event Management System</small>
+                <small style="font-size: 12px">Event Evaluation System</small>
             </div>
         </a>
 
@@ -55,7 +55,7 @@
 
         <!-- Sidebar Toggler (Sidebar) -->
         <div class="text-center d-none d-md-inline">
-            <button class="rounded-circle border-0" id="sidebarToggle"> </button>
+            <button class="rounded-circle border-0" id="sidebarToggle"></button>
         </div>
 
     </ul>
@@ -78,27 +78,22 @@
                     <!-- Nav Item - User Information -->
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="mr-2 d-none d-lg-inline text-gray-600 small"><i class="fa fa-2x fa-user-secret mr-1"></i> {{  Auth::user()->firstname }}</span>
-                        {{-- <img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60"> --}}
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small"><i class="fa fa-2x fa-user-circle-o mr-1"></i> {{  Auth::user()->firstname }}</span>
                         </a>
 
                         <!-- Dropdown - User Information -->
                         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Profile
+                            <a class="dropdown-item" href="{{ route('view.archives') }}">
+                                <i class="fa fa-archive fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Archives
                             </a>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                            <a class="dropdown-item" href="{{ route('admin.settings') }}">
+                                <i class="fa fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
                                 Settings
-                            </a>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Activity Log
                             </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                <i class="fa fa-sign-out fa-sm fa-fw mr-2 text-gray-400"></i>
                                 Logout
                             </a>
                         </div>
@@ -144,11 +139,25 @@
                                             data-event="{{ $event }}"
                                             ><i class="fa fa-pencil-square-o"></i> Event Details</button>
                                             <a href="{{ route('manage.event', ['event' => $event->id]) }}">
-                                                <button class="btn btn-info btn-sm"><i class="fa fa-list-alt"></i> Manage Event</button>
+                                                <button class="btn btn-info btn-sm"><i class="fa fa-list-alt"></i> Manage Event </button>
                                             </a>
-                                            <button onclick="deleteEvent(event)" type="button" class="btn btn-sm btn-danger"
-                                            data-event="{{ $event }}"
-                                            ><i class="fa fa-trash-o"></i> Delete</button>
+                                            @switch(date("Y-m-d"))
+                                                {{-- status: pending --}}
+                                                @case( date("Y-m-d") < $event->start_date)                                                    
+                                                    <button onclick="deleteEvent(event)" type="button" class="btn btn-sm btn-danger"
+                                                    data-event="{{ $event }}"
+                                                    ><i class="fa fa-trash-o"></i> Delete </button>
+                                                    @break
+                                                {{-- status: ongoing --}}
+                                                @case(date("Y-m-d") >= $event->start_date && date("Y-m-d") < $event->end_date )
+                                                    {{-- <p class="text-info">Ongoing</p> --}}
+                                                    @break
+                                                {{-- status: finish --}}
+                                                @case(date("Y-m-d") >= $event->end_date )
+                                                    <button onclick="archiveEvent(event)"  type="button" class="btn btn-sm btn-secondary"
+                                                    data-event="{{ $event }}"
+                                                    ><i class="fa fa-trash-o"></i> Archive</button>                                                    
+                                            @endswitch
                                         </td>
                                     </tr>
                                     @endforeach
@@ -193,7 +202,7 @@
             
 <!-- Scroll to Top Button-->
 <a class="scroll-to-top rounded" href="#page-top">
-    <i class="fa fa-angle-double-up"></i>
+    <i class="fa fa-angle-up"></i>
 </a>
 
 <!-- Logout Modal-->

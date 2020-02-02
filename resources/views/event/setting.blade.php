@@ -14,7 +14,7 @@
                 <small><img src="{{ asset('storage/logo/cspc-logo.png')}}" height="50" width="50" alt=""></small>
             </div>
             <div class="sidebar-brand-text mr-1">
-                <small class="text-xs" style="font-size: 10px">Centralized Event Management System</small>
+                <small style="font-size: 12px">Event Evaluation System</small>
             </div>
         </a>
 
@@ -37,13 +37,6 @@
             <a class="nav-link" href="{{ route('index.attendance', ['event' => $event->id]) }}">
                 <i class="fa fa-calendar-check-o"></i>
                 <span>Attendance</span>
-            </a>
-        </li>
-
-        <li class="nav-item">
-            <a class="nav-link" href="#">
-                <i class="fa fa-calendar-minus-o"></i>
-                <span>Event Profile</span>
             </a>
         </li>
 
@@ -103,27 +96,18 @@
                     <!-- Nav Item - User Information -->
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="mr-2 d-none d-lg-inline text-gray-600 small"><i class="fa fa-2x fa-user-secret mr-1"></i> {{  Auth::user()->firstname }}</span>
-                        {{-- <img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60"> --}}
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small"><i class="fa fa-2x fa-user-circle-o mr-1"></i> {{  Auth::user()->firstname }}</span>
                         </a>
 
                         <!-- Dropdown - User Information -->
                         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Profile
-                            </a>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Settings
-                            </a>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Activity Log
+                            <a class="dropdown-item" href="{{ route('view.archives') }}">
+                                <i class="fa fa-archive fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Archives
                             </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                <i class="fa fa-sign-out fa-sm fa-fw mr-2 text-gray-400"></i>
                                 Logout
                             </a>
                         </div>
@@ -148,6 +132,13 @@
 
                     <hr>
                     {{-- event image --}}
+                    @if (isset($event->event_image))
+                    <div class="row">
+                        <div class="col-sm-12" style="margin-top: 20px; dispay: inline-block; text-align: center;">
+                            <img style="height: 150px; width: 600px;" src="{{ asset('storage/event-image/'.$event->event_image.' ') }}" alt="">
+                        </div>
+                    </div>
+                    @endif
                     <div class="row">
                         <div class="col-sm-12">
                             <form action="{{route('import.eventimage')}}" method="post" enctype="multipart/form-data">
@@ -167,6 +158,13 @@
                         </div>
                     </div>
                     {{-- event certificate --}}
+                    @if (isset($event->event_certificate))
+                        <div class="row">
+                            <div class="col-sm-12" style="margin-top: 20px; dispay: inline-block; text-align: center;">
+                                <img style="height: 100%" src="{{ asset('storage/event-certificate/'.$event->event_certificate.' ') }}" alt="">
+                            </div>
+                        </div>
+                    @endif
                     <div class="row">
                         <div class="col-sm-12">
                             <form action="{{route('import.certificate')}}" method="post" enctype="multipart/form-data">
@@ -185,6 +183,14 @@
                             </form>
                         </div>
                     </div>
+                        {{-- event eventid --}}
+                        @if (isset($event->event_eventid))
+                        <div class="row">
+                            <div class="col-sm-12" style="margin-top: 20px; dispay: inline-block; text-align: center;">
+                                <img style="height: 100%" src="{{ asset('storage/event-id/'.$event->event_eventid.' ') }}" alt="">
+                            </div>
+                        </div>
+                    @endif
                     {{-- event id --}}
                     <div class="row">
                         <div class="col-sm-12">

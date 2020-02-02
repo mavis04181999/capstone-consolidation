@@ -70,5 +70,24 @@ class User extends Authenticatable
     public function events(){
         return $this->belongsTo(Event::class);
     }
+
+    public function titles() {
+        return [
+            0 => 'Dr.',
+            1 => 'Drs.',
+            2 => 'Ir.',
+            3 => 'Miss.',
+            4 => 'Mr.',
+            5 => 'Ms.',
+            6 => 'Professor'
+        ];
+    }
+
+    public function sexs() {
+        return [
+            0 => 'Male',
+            1 => 'Female'
+        ];
+    }
     
 }

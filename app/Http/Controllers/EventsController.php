@@ -3,15 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Charts\UserEvaluationChart;
+use App\Department;
 use App\Evaluation;
 use App\Event;
 use App\Feature;
 use App\Form;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
+use App\User;
 use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -44,6 +47,17 @@ class EventsController extends Controller
         //
     }
 
+    public function viewArchives() {
+
+        $users = User::user()->latest()->get();
+        $organizers = User::organizer()->latest()->get();
+        $departments = Department::latest()->get();
+        $events = Event::where('archive', 1)->latest()->get();
+        $features = Feature::all();
+
+        return view('admin.archive', compact('users', 'organizers', 'departments', 'events', 'features'));
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -63,7 +77,6 @@ class EventsController extends Controller
                 'event_name' => ucwords($request->validated()['event_name']),
                 'organizer_id' => ($request->validated()['organizer_id']),
                 'location' => ucwords($request->validated()['location']),
-                'event_type' => ($request->validated()['event_type']),
                 'start_date' => ($request->validated()['start_date']),
                 'end_date' => ($request->validated()['end_date']),
                 'department_id' => ($request->validated()['department_id']),
@@ -82,13 +95,11 @@ class EventsController extends Controller
                 'event_name' => ucwords($request->validated()['event_name']),
                 'organizer_id' => ($request->validated()['organizer_id']),
                 'location' => ucwords($request->validated()['location']),
-                'event_type' => ($request->validated()['event_type']),
                 'start_date' => ($request->validated()['start_date']),
                 'end_date' => ($request->validated()['end_date']),
                 'department_id' => ($request->validated()['department_id']),
                 'max_participants' => ($request->validated()['max_participants']),
                 'allow_prereg' => ($request->validated()['allow_prereg']),
-                'fee' => ($request->validated()['fee']),
                 'event_overview' => ucfirst($request->validated()['event_overview']),
                 'status' => $status,
             ];
@@ -117,126 +128,142 @@ class EventsController extends Controller
      */
     public function show(Event $event)
     {
-        // Queries:
-        // change the queries for total users it will depends on number of users participate on the event that registered only
-        $totalusers = DB::table('evaluations')->where('event_id', $event->id)->count();
-
-        $isevaluate = DB::table('evaluations')->where('event_id', $event->id)->where('is_evaluate', true)->count();
-
-        $isntevaluate = DB::table('evaluations')->where('event_id', $event->id)->where('is_evaluate', false)->count();
-
-        $evaluationchart = new UserEvaluationChart;
-
-        $evaluationchart->title('User Evaluation', 20, 'rgba(0, 153, 255, 0.71)');
-        $evaluationchart->loader(true);
-        $evaluationchart->height('500');
-        $evaluationchart->labels(['Complete', 'Pending']);
-        $evaluationchart->dataset('User Evaluation', 'bar', [$isevaluate, $isntevaluate])->options([
-            'backgroundColor' => ['rgba(0, 153, 255, 0.71)', 'rgba(232, 200, 44, 0.71)'],
-            'maintainAspectRatio' => false,
-            'scales'              => [
-                'xAxes' => [
-                    
-                ],
-                'yAxes' => [
-                    [
-                        'display' => false,
-                        'ticks' => [
-                            'suggestedMax' => '1000',
-                            'beginAtZero' => true,
+        // check first if he is admin or the right organizer
+        if(Auth::user()->role == 'admin' || Auth::user()->id == $event->organizer_id) {
+            
+            // Queries:
+            // change the queries for total users it will depends on number of users participate on the event that registered only
+            // $totalusers = DB::table('evaluations')->where('event_id', $event->id)->count();
+            
+            $totalusers = DB::table('participants')->where('event_id', $event->id)->where('is_attend', true)->count();
+            
+            $isevaluate = DB::table('evaluations')->where('event_id', $event->id)->where('is_evaluate', true)->count();
+            
+            $isntevaluate = DB::table('evaluations')->where('event_id', $event->id)->where('is_evaluate', false)->count();
+            
+            $evaluationchart = new UserEvaluationChart;
+            
+            $evaluationchart->title('User Evaluation', 20, 'rgba(0, 153, 255, 0.71)');
+            $evaluationchart->loader(true);
+            $evaluationchart->height('500');
+            $evaluationchart->labels(['Complete', 'Pending']);
+            $evaluationchart->dataset('User Evaluation', 'bar', [$isevaluate, $isntevaluate])->options([
+                'backgroundColor' => ['rgba(0, 153, 255, 0.71)', 'rgba(232, 200, 44, 0.71)'],
+                'maintainAspectRatio' => false,
+                'scales'              => [
+                    'xAxes' => [
+                        
+                    ],
+                    'yAxes' => [
+                        [
+                            'display' => false,
+                            'ticks' => [
+                                'suggestedMax' => '1000',
+                                'beginAtZero' => true,
+                            ],
                         ],
                     ],
                 ],
-            ],
-        ], true);
-        
-        $evaluationchart->script();
-
-        // get the questions of the event->form:
-        $questions = Form::where('event_id', $event->id)->where('input_type', 'radio')->get();
-        // get the maximum value on event->form->input from the first question:
-
-        $maxOption = (int) DB::table('options')->where('form_id', $questions[0]->id)->max('value');
-
-        // conditional statement for max value 4 and 5
-        // get the evaluations for the corresponding event evalution->event_id
-        $evaluations = DB::table('evaluations')
-            ->where('event_id', $event->id)
-            ->where('is_evaluate', true)->get();
-
-        // $evaluates = DB::table('evaluates')->where('evaluation_id')
-
-        // traverse through the questions and get the evaluations
-        $question = [];
-        $percentage = [];
-
-        foreach ($questions as $qkey => $qvalue) {
+            ], true);
             
-            for ($i=1; $i <= $maxOption; $i++) { 
-                
-                $count = 0;
-                
-                foreach ($evaluations as $ekey => $evalue) {
-                    $current = DB::table('evaluates')
-                        ->where('evaluation_id', $evalue->id)
-                        ->where('form_id', $qvalue->id)->get();
-                    //problem here
-                    if($current[0]->answer == $i){
-                        $count++;
+            $evaluationchart->script();
+            
+            // get the questions of the event->form:
+                $questions = Form::where('event_id', $event->id)->where('input_type', 'radio')->get();
+                // get the maximum value on event->form->input from the first question:
+                    
+                    $maxOption = (int) DB::table('options')->where('form_id', $questions[0]->id)->max('value');
+                    
+                    // conditional statement for max value 4 and 5
+                    // get the evaluations for the corresponding event evalution->event_id
+                    $evaluations = DB::table('evaluations')
+                    ->where('event_id', $event->id)
+                    ->where('is_evaluate', true)->get();
+                    
+                    // $evaluates = DB::table('evaluates')->where('evaluation_id')
+                    
+                    // traverse through the questions and get the evaluations
+                    $question = [];
+                    $percentage = [];
+                    
+                    foreach ($questions as $qkey => $qvalue) {
+                        
+                        for ($i=1; $i <= $maxOption; $i++) { 
+                            
+                            $count = 0;
+                            
+                            foreach ($evaluations as $ekey => $evalue) {
+                                $current = DB::table('evaluates')
+                                ->where('evaluation_id', $evalue->id)
+                                ->where('form_id', $qvalue->id)->get();
+                                //problem here
+                                if($current[0]->answer == $i){
+                                    $count++;
+                                }
+                                
+                            }
+                            $percentage[$qvalue->id][$i] = $count * $i;
+                            $question[$qvalue->id][$i] = $count; 
+                        }
+                        
+                    }
+                    // printout evaluation to each question and percentage to the corresponding weight
+                    
+                    // initialize the overallrating
+                    $overallrating = 0;
+                    
+                    $remarks = [];
+                    // solution for division of zero occurs when there is no someone evaluate the event
+                    if($isevaluate > 0){
+                        
+                        // loop through and get the remarks of each question
+                        foreach ($percentage as $pkey => $pvalue) {
+                            
+                            $remarks[$pkey] = round((array_sum($pvalue) / $isevaluate), 2);
+                            
+                        }
+                        // printout the remarks of each question
+                        // dd($remarks);
+                        
+                        // get the average from remarks
+                        $overallrating = round((array_sum($remarks) / count($remarks)), 2);
+                        
+                        // dd($overallrating);
+                        
                     }
                     
-                }
-                $percentage[$qvalue->id][$i] = $count * $i;
-                $question[$qvalue->id][$i] = $count; 
-            }
-            
-        }
-        // printout evaluation to each question and percentage to the corresponding weight
-
-        // initialize the overallrating
-        $overallrating = 0;
-
-        $remarks = [];
-        // solution for division of zero occurs when there is no someone evaluate the event
-        if($isevaluate > 0){
-
-            // loop through and get the remarks of each question
-            foreach ($percentage as $pkey => $pvalue) {
-                
-                $remarks[$pkey] = round((array_sum($pvalue) / $isevaluate), 2);
-                
-            }
-            // printout the remarks of each question
-            // dd($remarks);
-
-            // get the average from remarks
-            $overallrating = round((array_sum($remarks) / count($remarks)), 2);
-
-            // dd($overallrating);
-
+                    $reports = [];
+                    
+                    // get the questions key
+                    foreach ($questions as $qkey => $qvalue) {
+                        $reports[$qvalue->id]['question'] = $qvalue->question;
+                    }
+                    // get the remarks
+                    foreach ($remarks as $rkey => $rvalue) {
+                        $reports[$rkey]['remarks'] = $rvalue;
+                    }
+                    
+                    return view('event.show', compact('event', 'totalusers', 'isevaluate', 'isntevaluate', 'evaluationchart', 'reports', 'maxOption'));
+        }else {
+            return back()->with('error', ' Unauthorized Access');
         }
 
-        $reports = [];
-
-        // get the questions key
-        foreach ($questions as $qkey => $qvalue) {
-            $reports[$qvalue->id]['question'] = $qvalue->question;
-        }
-        // get the remarks
-        foreach ($remarks as $rkey => $rvalue) {
-            $reports[$rkey]['remarks'] = $rvalue;
-        }
-
-        return view('event.show', compact('event', 'totalusers', 'isevaluate', 'isntevaluate', 'evaluationchart', 'reports', 'maxOption'));
     }
 
     public function manage(Event $event, Feature $feature)
     {
-        $features = Feature::all();
-
-        $event_features = DB::table('event_feature')->where('event_id' , $event->id)->orderBy('feature_id')->get();
-
-        return view('event.manage', compact('event', 'features', 'event_features'));
+        try {
+            $features = Feature::all();
+            
+            // $event_features = DB::table('event_feature')->where('event_id' , $event->id)->orderBy('feature_id')->get();
+            $event_features = DB::connection('mysql2')->table('event_features')->where('event_id', $event->id)->orderBy('feature_id')->get();
+            $event_plucks = DB::connection('mysql2')->table('event_features')->where('event_id', $event->id)->orderBy('feature_id')->pluck('feature_id');
+            
+            return view('event.manage', compact('event', 'features', 'event_features', 'event_plucks'));
+            
+        } catch (\Throwable $th) {
+            die('Could not find the database cems_db. Please check your configuration');
+        }
     }
 
     /**
@@ -266,14 +293,12 @@ class EventsController extends Controller
                 'event_name' => ucwords($request->validated()['event_name']),
                 'organizer_id' => ($request->validated()['organizer_id']),
                 'location' => ucwords($request->validated()['location']),
-                'event_type' => ($request->validated()['event_type']),
                 'start_date' => ($request->validated()['start_date']),
                 'end_date' => ($request->validated()['end_date']),
                 'department_id' => ($request->validated()['department_id']),
                 'max_participants' => ($request->validated()['max_participants']),
                 'allow_prereg' => ($request->validated()['allow_prereg']),
                 'prereg_slot' => null,
-                'fee' => ($request->validated()['fee']),
                 'event_overview' => ucfirst($request->validated()['event_overview']),
                 'status' => ($request->validated()['status'])
             ]);
@@ -282,14 +307,12 @@ class EventsController extends Controller
                 'event_name' => ucwords($request->validated()['event_name']),
                 'organizer_id' => ($request->validated()['organizer_id']),
                 'location' => ucwords($request->validated()['location']),
-                'event_type' => ($request->validated()['event_type']),
                 'start_date' => ($request->validated()['start_date']),
                 'end_date' => ($request->validated()['end_date']),
                 'department_id' => ($request->validated()['department_id']),
                 'max_participants' => ($request->validated()['max_participants']),
                 'allow_prereg' => ($request->validated()['allow_prereg']),
                 'prereg_slot' => ($request->validated()['prereg_slot']),
-                'fee' => ($request->validated()['fee']),
                 'event_overview' => ucfirst($request->validated()['event_overview']),
                 'status' => ($request->validated()['status'])
             ]);
@@ -329,6 +352,42 @@ class EventsController extends Controller
 
         }
 
+    }
+
+    public function archive(Event $event, Request $request) {
+        $event = Event::find($request->event_id);
+        
+        $event_name = $event->event_name;
+
+        $update = $event->update([
+            'archive' => 1,
+        ]);
+
+        if($update) {
+
+            return back()->with('success', $event_name.": Archived Successfully");
+
+        }else {
+
+            return back()->with('error', $event_name.": Fail to Archive");
+
+        }
+    }
+
+    public function unarchive(Event $event, Request $request) {
+        $event = Event::find($request->event_id);
+
+        $event_name = $event->event_name;
+
+        $update = $event->update([
+            'archive' => 0
+        ]);
+
+        if($update) {
+            return back()->with('success', $event_name.": Unarchived Successfully");
+        }else {
+            return back()-with('error', $event_name.":Fail to Unarchive");
+        }
     }
 
     public function feature(Event $event, Request $request) {
@@ -662,7 +721,7 @@ class EventsController extends Controller
             $reports[$rkey]['remarks'] = $rvalue;
         }
 
-        // dd($reports);
+
 
         $pdf = PDF::loadView('event.pdfreport', compact('event' , 'overAllRating', 'maxOption', 'reports', 'totalParticipants', 'isEvaluate', 'isntEvaluate', 'comments'))->setPaper('a4', 'portrait')->setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif']);
         

@@ -17,12 +17,12 @@ class CreateUsersTable extends Migration
             $table->bigIncrements('id');
             $table->string('role');
 
-            $table->string('email')->unique();
+            $table->string('email')->nullable();
             $table->string('title')->nullable();
-            $table->string('firstname');
+            $table->string('firstname')->nullable();
 
             $table->string('middlename')->nullable();
-            $table->string('lastname');
+            $table->string('lastname')->nullable();
             $table->string('nickname')->nullable();
 
             $table->string('certificate_name')->nullable();
@@ -32,7 +32,6 @@ class CreateUsersTable extends Migration
             $table->string('occupation')->nullable();
             $table->string('sex')->nullable();
             $table->string('birthday')->nullable();
-
 
             $table->string('department_id')->nullable();
             $table->string('course_id')->nullable();

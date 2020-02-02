@@ -14,7 +14,7 @@
                 <small><img src="{{ asset('storage/logo/cspc-logo.png')}}" height="50" width="50" alt=""></small>
             </div>
             <div class="sidebar-brand-text mr-1">
-                <small class="text-xs" style="font-size: 10px">Centralized Event Management System</small>
+                <small style="font-size: 12px">Event Evaluation System</small>
             </div>
         </a>
 
@@ -37,13 +37,6 @@
             <a class="nav-link" href="{{ route('index.attendance', ['event' => $event->id]) }}">
                 <i class="fa fa-calendar-check-o"></i>
                 <span>Attendance</span>
-            </a>
-        </li>
-
-        <li class="nav-item">
-            <a class="nav-link" href="#">
-                <i class="fa fa-calendar-minus-o"></i>
-                <span>Event Profile</span>
             </a>
         </li>
 
@@ -103,27 +96,17 @@
                     <!-- Nav Item - User Information -->
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="mr-2 d-none d-lg-inline text-gray-600 small"><i class="fa fa-2x fa-user-secret mr-1"></i> {{  Auth::user()->firstname }}</span>
-                        {{-- <img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60"> --}}
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small"><i class="fa fa-2x fa-user-circle-o mr-1"></i> {{  Auth::user()->firstname }}</span>                        
                         </a>
-
                         <!-- Dropdown - User Information -->
-                        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">                           
                             <a class="dropdown-item" href="#">
-                                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Profile
-                            </a>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Settings
-                            </a>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Activity Log
+                                <i class="fa fa-archive fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Archives
                             </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                <i class="fa fa-sign-out fa-sm fa-fw mr-2 text-gray-400"></i>
                                 Logout
                             </a>
                         </div>
@@ -147,7 +130,8 @@
                         <button onclick="eventFeature(event)" class="btn btn-primary"
                         data-event_id="{{$event->id}}"
                         data-event_name="{{$event->event_name}}"
-                        data-features="{{$event->features()->pluck('feature_id')}}"
+                        {{-- data-features="{{$event->features()->pluck('feature_id')}}" --}}
+                        data-features="{{ $event_plucks }}"
                         ><i class="fa fa-plus"></i> Event Feature</button>
                     </div>
                     <hr>
@@ -175,7 +159,7 @@
                                     </a>
                                     @break
                                 @case($feature->feature_id == '3')
-                                    <a href="" class="col-sm-9" style="text-decoration: none; ">
+                                    <a href="{{ route('show.payment', ['event' => $event->id]) }}" class="col-sm-9" style="text-decoration: none; ">
                                         <div class="card mb-3 py-1 border-bottom-primary">
                                             <div class="card-body text-center">
                                                 <h5 class="text-primary"><i class="fa fa-usd"></i> Payment Collection</h5>

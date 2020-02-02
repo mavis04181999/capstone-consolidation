@@ -21,7 +21,7 @@
       .showcase {
         background-size: cover;
         background-position: center;
-        height: 100vh;
+        /* height: 100vh; */
         
         display: flex;
         flex-direction: column;
@@ -30,10 +30,6 @@
         
         text-align: center;
         /* padding: 0 20px; */
-      }
-      .showcase h4 {
-        font-size: 50px;
-        line-height: 1.2;
       }
   </style>
   <body>
@@ -45,7 +41,7 @@
     <div class="body-wrapper">
         <div class="showcase mt-4">
             <img class="certificate" src="storage/event-certificate/{{ $event->event_certificate }}" alt="">
-            <h4 style="margin-top: 575px; margin-left: 700px;;" class="float-right certificate-name">{{ $participant->certificate_name }}</h4>
+            <h2 style=" margin-top: 575px; margin-right: 250px;;" class="float-right certificate-name">{{ $participant->certificate_name }}</h2>
         </div>
     </div>
 

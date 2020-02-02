@@ -14,7 +14,7 @@
                 <small><img src="{{ asset('storage/logo/cspc-logo.png')}}" height="50" width="50" alt=""></small>
             </div>
             <div class="sidebar-brand-text mr-1">
-                <small class="text-xs" style="font-size: 10px">Centralized Event Management System</small>
+                <small style="font-size: 12px">Event Evaluation System</small>
             </div>
         </a>
 

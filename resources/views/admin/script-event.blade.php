@@ -23,7 +23,6 @@
             event_name: document.querySelector('#create-event-modal #create-event-form #create-event-event_name').value,
             organizer_id: document.querySelector('#create-event-modal #create-event-form #create-event-organizer_id').value,
             location: document.querySelector('#create-event-modal #create-event-form #create-event-location').value,
-            event_type: document.querySelector('#create-event-modal #create-event-form #create-event-event_type').value,
             
             start_date: document.querySelector('#create-event-modal #create-event-form #create-event-start_date').value,
             end_date: document.querySelector('#create-event-modal #create-event-form #create-event-end_date').value,
@@ -32,7 +31,6 @@
             
             allow_prereg: document.querySelector('#create-event-modal #create-event-form #create-event-allow_prereg').value,
             prereg_slot: document.querySelector('#create-event-modal #create-event-form #create-event-prereg_slot').value,
-            fee: document.querySelector('#create-event-modal #create-event-form #create-event-fee').value,
             event_overview: document.querySelector('#create-event-modal #create-event-form #create-event-event_overview').value,
             
         }).then(response => {
@@ -93,8 +91,6 @@
         organizer_id.value = (credential.organizer_id);
         const location = document.querySelector('#update-event-modal #update-event-form .modal-body #update-event-location');
         location.value = (credential.location);
-        const event_type = document.querySelector('#update-event-modal #update-event-form .modal-body #update-event-event_type');
-        event_type.value = (credential.event_type);
         
         const start_date = document.querySelector('#update-event-modal #update-event-form .modal-body #update-event-start_date');
         start_date.value = (credential.start_date);
@@ -109,11 +105,10 @@
         allow_prereg.value = (credential.allow_prereg);
         const prereg_slot = document.querySelector('#update-event-modal #update-event-form .modal-body #update-event-prereg_slot');
         prereg_slot.value = (credential.prereg_slot);
-        const fee = document.querySelector('#update-event-modal #update-event-form .modal-body #update-event-fee');
-        fee.value = (credential.fee);
+        const prereg_validity = document.querySelector('#update-event-modal #update-event-form .modal-body #update-event-prereg_validity');
+        prereg_validity.value = (credential.prereg_validity);
         const event_overview = document.querySelector('#update-event-modal #update-event-form .modal-body #update-event-event_overview');
         event_overview.value = (credential.event_overview);
-        
         
         const status = document.querySelector('#update-event-modal #update-event-form .modal-body #update-event-status');
         status.value = (credential.status);
@@ -142,11 +137,9 @@
         
         axios.patch("{{ route('update.event') }}", {
             event_id : document.querySelector('#update-event-modal #update-event-form .modal-body #update-event-event_id').value,
-            
             event_name: document.querySelector('#update-event-modal #update-event-form #update-event-event_name').value,
             organizer_id: document.querySelector('#update-event-modal #update-event-form #update-event-organizer_id').value,
             location: document.querySelector('#update-event-modal #update-event-form #update-event-location').value,
-            event_type: document.querySelector('#update-event-modal #update-event-form #update-event-event_type').value,
             
             start_date: document.querySelector('#update-event-modal #update-event-form #update-event-start_date').value,
             end_date: document.querySelector('#update-event-modal #update-event-form #update-event-end_date').value,
@@ -155,7 +148,7 @@
             
             allow_prereg: document.querySelector('#update-event-modal #update-event-form #update-event-allow_prereg').value,
             prereg_slot: document.querySelector('#update-event-modal #update-event-form #update-event-prereg_slot').value,
-            fee: document.querySelector('#update-event-modal #update-event-form #update-event-fee').value,
+            prereg_validity: document.querySelector('#update-event-modal #update-event-form #update-event-prereg_validity').value,
             event_overview: document.querySelector('#update-event-modal #update-event-form #update-event-event_overview').value,
             
             status: document.querySelector('#update-event-modal #update-event-form #update-event-status').value,
@@ -200,6 +193,39 @@
         name.textContent = credential.event_name;
         
         $('#delete-event-modal').modal({
+            show: true,
+            backdrop: "static",
+            keyboard: false
+        });
+    }
+
+    function archiveEvent(event) {
+        var credential = JSON.parse(event.target.dataset.event);
+        
+        var event_id = document.querySelector('#archive-event-modal #archive-event-form .modal-body #archive-event-event_id');
+        event_id.value = credential.id;
+        
+        var name = document.querySelector('#archive-event-modal #archive-event-name');
+        name.textContent = credential.event_name;
+        
+        $('#archive-event-modal').modal({
+            show: true,
+            backdrop: "static",
+            keyboard: false
+        });
+    }
+
+    function unarchiveEvent(event) {
+        
+        var credential = JSON.parse(event.target.dataset.event);
+
+        var event_id = document.querySelector('#unarchive-event-modal #unarchive-event-form .modal-body #unarchive-event-event_id');
+        event_id.value = credential.id;
+        
+        var name = document.querySelector('#unarchive-event-modal #unarchive-event-name');
+        name.textContent = credential.event_name;
+        
+        $('#unarchive-event-modal').modal({
             show: true,
             backdrop: "static",
             keyboard: false

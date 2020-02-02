@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Event;
 use App\Imports\ImportPayments;
 use App\Payment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class PaymentsController extends Controller
@@ -17,6 +19,7 @@ class PaymentsController extends Controller
      */
     public function index(Event $event)
     {
+        
         $payments = Payment::with('user')->latest()->get();
 
         return view('payment.index', compact('event', 'payments'));
@@ -40,7 +43,22 @@ class PaymentsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validate = $request->validate([
+            'event_id' => ['required', 'exists:events,id'],
+            'username' => ['required', 'exists:users,username'],
+            'receipt' => ['required', 'unique:payments,receipt'],
+        ]);
+        
+        $user = DB::table('users')->where('username', $validate['username'])->first();
+
+        Payment::create([
+            'event_id' => $validate['event_id'],
+            'user_id' => $user->id,
+            'receipt' => strtoupper($validate['receipt']),
+            'date' => Carbon::parse(Carbon::now())->format('Y-m-d')
+        ]);
+
+        return back()->with('success', 'Receipt saved successfully');
     }
 
     /**
@@ -49,9 +67,10 @@ class PaymentsController extends Controller
      * @param  \App\Payment  $payment
      * @return \Illuminate\Http\Response
      */
-    public function show(Payment $payment)
-    {
-        //
+    public function show(Payment $payment, Event $event)
+    {  
+        
+        return view('payment.show', compact('payment', 'event'));
     }
 
     /**

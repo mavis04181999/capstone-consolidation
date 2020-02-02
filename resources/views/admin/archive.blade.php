@@ -27,7 +27,7 @@
         </div>
 
         <!-- Nav Item - Charts -->
-        <li class="nav-item active">
+        <li class="nav-item">
             <a class="nav-link" href="{{ route('admin.index') }}">
                 <i class="fa fa-home"></i>
                 <span>Main Dashboard</span>
@@ -78,22 +78,27 @@
                     <!-- Nav Item - User Information -->
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="mr-2 d-none d-lg-inline text-gray-600 small"><i class="fa fa-2x fa-user-circle-o mr-1"></i> {{  Auth::user()->firstname }}</span>
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small"><i class="fa fa-2x fa-user-secret mr-1"></i> {{  Auth::user()->firstname }}</span>
+                        {{-- <img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60"> --}}
                         </a>
 
                         <!-- Dropdown - User Information -->
                         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                             <a class="dropdown-item" href="#">
-                                <i class="fa fa-user-circle-o fa-sm fa-fw mr-2 text-gray-400"></i>
+                                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                 Profile
                             </a>
                             <a class="dropdown-item" href="#">
-                                <i class="fa fa-archive fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Archives
+                                <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Settings
+                            </a>
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Activity Log
                             </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                                <i class="fa fa-sign-out fa-sm fa-fw mr-2 text-gray-400"></i>
+                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                 Logout
                             </a>
                         </div>
@@ -110,9 +115,56 @@
 
                 @include('include.messages')
                 
-                {{-- standard form builder vue script here --}}
-                <standard-form-builder event_id="{{ $event->id }}" event_name="{{ $event->event_name }}" ></standard-form-builder>
-                
+                {{-- events table --}}
+                <section id="event-dashboard">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="row justify-content-between">
+                                <h1 class="h4 mb-0 text-gray-900"><i class="fa fa-calendar-o mr-1"></i> Event Archives</h1>
+                            </div>
+                        <hr class="divider">
+                        {{-- event table --}}
+                        <table id="event-table" class="table table-condensed text-dark">
+                            <thead>
+                                <tr>
+                                    <th>Event Code</th>
+                                    <th>Event Name</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (isset($events) && count($events) > 0)
+                                    @foreach ($events as $event)
+                                    <tr>
+                                        <td>{{$event->event_code }}</td>
+                                        <td>{{$event->event_name }}</td>
+                                        <td>
+                                            <a href="{{ route('manage.event', ['event' => $event->id]) }}">
+                                                <button class="btn btn-info btn-sm"><i class="fa fa-list-alt"></i> Manage Event</button>
+                                            </a>
+                                            <button onclick="unarchiveEvent(event)"  type="button" class="btn btn-sm btn-secondary"
+                                            data-event="{{ $event }}"
+                                            ><i class="fa fa-archive"></i> Unarchive</button>                                  
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <p class="alert alert-info">No Record Found</p>
+                                    </tr>
+                                @endif
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
+                </section>
+
+                {{-- start: include modals --}}
+
+                @include('admin.modal-event')
+
+                {{-- end: include modals --}}
+            
             </div>
             <!-- /.container-fluid -->
 
@@ -172,9 +224,20 @@
 @endsection
 
 @section('scripts')
+    <link rel="stylesheet" href="{{ asset('css/vanilla-dataTables.min.css')}}">
 
-<script>
-    console.log('standard form builder loaded successfully');
-</script>
+    <script src="{{ asset('js/vanilla-dataTables.js') }}"></script>
+
+    <script>
+        var eventtable = new DataTable('#event-table', {
+        sortable: true,
+        fixedHeight: true,
+        });
+    </script>
+
+    @include('admin.script-event')
 
 @endsection
+
+
+
