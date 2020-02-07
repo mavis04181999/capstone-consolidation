@@ -2771,6 +2771,8 @@ __webpack_require__.r(__webpack_exports__);
             value: option.value
           }).then(function (response) {
             console.log("321: ", response);
+            console.log("".concat(hostname));
+            console.log(toString(window.location.origin));
           })["catch"](function (error) {
             console.log(error);
           });

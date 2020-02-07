@@ -440,6 +440,8 @@ export default {
               })
               .then(response => {
                 console.log("321: ", response);
+                console.log(`${hostname}`);
+                console.log(toString(window.location.origin));
               })
               .catch(error => {
                 console.log(error);
