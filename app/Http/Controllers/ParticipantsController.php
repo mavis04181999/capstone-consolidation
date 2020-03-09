@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Event;
 use App\Participant;
 use App\User;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 
 class ParticipantsController extends Controller
@@ -149,6 +150,18 @@ class ParticipantsController extends Controller
             return back()->with('success',  'Participant Remove from Event Successfully');
         }
         
+    }
+
+    public function pdfparticipants(Request $request) {
+        $event = Event::find($request->event)->first();
+        
+        $participants = Participant::with('user')->where('event_id', $event->id)->get();
+        
+        $pdf = PDF::loadView('event.pdfparticipants', compact('event' , 'participants'))->setPaper('a4', 'portrait')->setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif']);
+        
+        $fileName = $event->event_name.'-participants';
+
+        return $pdf->stream($fileName.'.pdf');
     }
     
 }

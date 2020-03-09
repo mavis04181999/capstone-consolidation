@@ -107,7 +107,7 @@
                 <section>
                     <div class="row justify-content-between">
                         <h4 class="text-dark"><i class="fa fa-users mr-1"></i> {{$event->event_name}} Participants</h4>
-                        <a href="" target="_blank" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm mx-1"><i class="fa fa-download fa-sm text-white-50"></i> Generate Report</a>
+                        <a href="{{ route('event.pdfparticipants', ['event' => $event->id]) }}" target="_blank" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm mx-1"><i class="fa fa-download fa-sm text-white-50"></i> Generate Report</a>
                     </div>
                     <hr>
 

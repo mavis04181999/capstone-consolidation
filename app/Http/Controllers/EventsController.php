@@ -66,7 +66,6 @@ class EventsController extends Controller
      */
     public function store(StoreEventRequest $request)
     {
-        
         $event_code = substr(Str::upper(Str::uuid()), 9, 9);
         $status = 'active';
 
@@ -83,9 +82,10 @@ class EventsController extends Controller
                 'max_participants' => ($request->validated()['max_participants']),
                 'allow_prereg' => ($request->validated()['allow_prereg']),
                 'prereg_slot' => ($request->validated()['prereg_slot']),
-                'fee' => ($request->validated()['fee']),
+                // 'fee' => ($request->validated()['fee']),
                 'event_overview' => ucfirst($request->validated()['event_overview']),
                 'status' => $status,
+                'archive' => 0,
             ];
         } else {
             // 2. false prereg slot
@@ -102,6 +102,7 @@ class EventsController extends Controller
                 'allow_prereg' => ($request->validated()['allow_prereg']),
                 'event_overview' => ucfirst($request->validated()['event_overview']),
                 'status' => $status,
+                'archive' => 0,
             ];
         }
 
@@ -169,81 +170,82 @@ class EventsController extends Controller
             $evaluationchart->script();
             
             // get the questions of the event->form:
-                $questions = Form::where('event_id', $event->id)->where('input_type', 'radio')->get();
-                // get the maximum value on event->form->input from the first question:
+            $questions = Form::where('event_id', $event->id)->where('input_type', 'radio')->get();
+            // get the maximum value on event->form->input from the first question:                    
+            $maxOption = (int) DB::table('options')->where('form_id', $questions[0]->id)->max('value');
+            
+            // conditional statement for max value 4 and 5
+            // get the evaluations for the corresponding event evalution->event_id
+            $evaluations = DB::table('evaluations')->where('event_id', $event->id)->where('is_evaluate', true)->get();
+            
+            // $evaluates = DB::table('evaluates')->where('evaluation_id')
+            
+            // traverse through the questions and get the evaluations to each questions.
+            $question = [];
+            $percentage = [];
+            
+            foreach ($questions as $qkey => $qvalue) {
+                
+                for ($i=1; $i <= $maxOption; $i++) { 
+                    // counter for evaluation sample base on the maxOption 4 or 5
+                    //1 = 0   1 = 0
+                    //2 = 0   2 = 0
+                    //3 = 1   3 = 0
+                    //4 = 0   4 = 0
+                    //        5 = 1
+                    $count = 0;
                     
-                    $maxOption = (int) DB::table('options')->where('form_id', $questions[0]->id)->max('value');
-                    
-                    // conditional statement for max value 4 and 5
-                    // get the evaluations for the corresponding event evalution->event_id
-                    $evaluations = DB::table('evaluations')
-                    ->where('event_id', $event->id)
-                    ->where('is_evaluate', true)->get();
-                    
-                    // $evaluates = DB::table('evaluates')->where('evaluation_id')
-                    
-                    // traverse through the questions and get the evaluations
-                    $question = [];
-                    $percentage = [];
-                    
-                    foreach ($questions as $qkey => $qvalue) {
-                        
-                        for ($i=1; $i <= $maxOption; $i++) { 
-                            
-                            $count = 0;
-                            
-                            foreach ($evaluations as $ekey => $evalue) {
-                                $current = DB::table('evaluates')
-                                ->where('evaluation_id', $evalue->id)
-                                ->where('form_id', $qvalue->id)->get();
-                                //problem here
-                                if($current[0]->answer == $i){
-                                    $count++;
-                                }
-                                
-                            }
-                            $percentage[$qvalue->id][$i] = $count * $i;
-                            $question[$qvalue->id][$i] = $count; 
+                    foreach ($evaluations as $ekey => $evalue) {
+                        $current = DB::table('evaluates')->where('evaluation_id', $evalue->id)
+                                        ->where('form_id', $qvalue->id)->get();
+                        //problem here
+                        if($current[0]->answer == $i){
+                            $count++;
                         }
                         
                     }
-                    // printout evaluation to each question and percentage to the corresponding weight
+                    $percentage[$qvalue->id][$i] = $count * $i;
+                    $question[$qvalue->id][$i] = $count; 
+                }
+                
+            }               
+            // printout evaluation to each question and percentage to the corresponding weight
+            
+            // initialize the overallrating
+            $overallrating = 0;
+            
+            $remarks = [];
+            // solution for division of zero occurs when there is no someone evaluate the event
+            if($isevaluate > 0){
+                
+                // loop through and get the remarks of each question
+                foreach ($percentage as $pkey => $pvalue) {
                     
-                    // initialize the overallrating
-                    $overallrating = 0;
+                    $remarks[$pkey] = round((array_sum($pvalue) / $isevaluate), 2);
                     
-                    $remarks = [];
-                    // solution for division of zero occurs when there is no someone evaluate the event
-                    if($isevaluate > 0){
-                        
-                        // loop through and get the remarks of each question
-                        foreach ($percentage as $pkey => $pvalue) {
-                            
-                            $remarks[$pkey] = round((array_sum($pvalue) / $isevaluate), 2);
-                            
-                        }
-                        // printout the remarks of each question
-                        // dd($remarks);
-                        
-                        // get the average from remarks
-                        $overallrating = round((array_sum($remarks) / count($remarks)), 2);
-                        
-                        // dd($overallrating);
-                        
-                    }
-                    
-                    $reports = [];
-                    
-                    // get the questions key
-                    foreach ($questions as $qkey => $qvalue) {
-                        $reports[$qvalue->id]['question'] = $qvalue->question;
-                    }
-                    // get the remarks
-                    foreach ($remarks as $rkey => $rvalue) {
-                        $reports[$rkey]['remarks'] = $rvalue;
-                    }
-                    
-                    return view('event.show', compact('event', 'totalusers', 'isevaluate', 'isntevaluate', 'evaluationchart', 'reports', 'maxOption'));
+                }
+                // printout the remarks of each question
+                // dd($remarks);
+                
+                // get the average from remarks
+                $overallrating = round((array_sum($remarks) / count($remarks)), 2);
+                
+                // dd($overallrating);
+                
+            }
+            
+            $reports = [];
+            
+            // get the questions key
+            foreach ($questions as $qkey => $qvalue) {
+                $reports[$qvalue->id]['question'] = $qvalue->question;
+            }
+            // get the remarks
+            foreach ($remarks as $rkey => $rvalue) {
+                $reports[$rkey]['remarks'] = $rvalue;
+            }
+            
+            return view('event.show', compact('event', 'totalusers', 'isevaluate', 'isntevaluate', 'evaluationchart', 'reports', 'maxOption'));
         }else {
             return back()->with('error', ' Unauthorized Access');
         }
@@ -252,18 +254,27 @@ class EventsController extends Controller
 
     public function manage(Event $event, Feature $feature)
     {
-        try {
-            $features = Feature::all();
-            
-            // $event_features = DB::table('event_feature')->where('event_id' , $event->id)->orderBy('feature_id')->get();
-            $event_features = DB::connection('mysql2')->table('event_features')->where('event_id', $event->id)->orderBy('feature_id')->get();
-            $event_plucks = DB::connection('mysql2')->table('event_features')->where('event_id', $event->id)->orderBy('feature_id')->pluck('feature_id');
-            
-            return view('event.manage', compact('event', 'features', 'event_features', 'event_plucks'));
-            
-        } catch (\Throwable $th) {
-            die('Could not find the database cems_db. Please check your configuration');
+        $features = Feature::all();
+        
+        if(count($features) == 0) {
+            $cems_features = DB::connection('mysql2')->table('features')->get();
+            foreach ($cems_features as $key => $value) {                
+                Feature::create([
+                    'name' => $value->name
+                ]);
+            }
         }
+        
+        // $event_features = DB::table('event_feature')->where('event_id' , $event->id)->orderBy('feature_id')->get();
+        $event_features = (DB::connection('mysql2')->table('event_features')->where('event_id', $event->id)->orderBy('feature_id')->count()) > 0 ? 
+        DB::connection('mysql2')->table('event_features')->where('event_id', $event->id)->orderBy('feature_id')->get() : 
+        DB::table('event_feature')->where('event_id', $event->id)->orderBy('feature_id')->get();    
+        
+        $event_plucks = DB::connection('mysql2')->table('event_features')->where('event_id', $event->id)->orderBy('feature_id')->pluck('feature_id')->count() > 0 ?
+        DB::connection('mysql2')->table('event_features')->where('event_id', $event->id)->orderBy('feature_id')->pluck('feature_id') :
+        DB::table('event_feature')->where('event_id', $event->id)->orderBy('feature_id')->pluck('feature_id');
+        
+        return view('event.manage', compact('event', 'features', 'event_features', 'event_plucks'));
     }
 
     /**
@@ -721,13 +732,22 @@ class EventsController extends Controller
             $reports[$rkey]['remarks'] = $rvalue;
         }
 
-
-
-        $pdf = PDF::loadView('event.pdfreport', compact('event' , 'overAllRating', 'maxOption', 'reports', 'totalParticipants', 'isEvaluate', 'isntEvaluate', 'comments'))->setPaper('a4', 'portrait')->setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif']);
+        if ($maxOption == 4) {
+            $pdf = PDF::loadView('event.pdfreport4', compact('event' , 'overAllRating', 'maxOption', 'reports', 'totalParticipants', 'isEvaluate', 'isntEvaluate', 'comments'))->setPaper('a4', 'portrait')->setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif']);
         
-        $fileName = $event->event_name.'-report';
+            $fileName = $event->event_name.'-report';
+    
+            return $pdf->stream($fileName.'.pdf');
+            
+        }else {
+            $pdf = PDF::loadView('event.pdfreport5', compact('event' , 'overAllRating', 'maxOption', 'reports', 'totalParticipants', 'isEvaluate', 'isntEvaluate', 'comments'))->setPaper('a4', 'portrait')->setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif']);
+        
+            $fileName = $event->event_name.'-report';
+    
+            return $pdf->stream($fileName.'.pdf');
+        }
 
-        return $pdf->stream($fileName.'.pdf');
+
 
     }
 }

@@ -116,6 +116,7 @@ Route::get('/ticket/{ticket}', 'TicketsController@show')->name('ticket.show');
 
 Route::get('/admin/events/{event}/pdfreport', 'EventsController@pdfreport')->name('event.pdfreport');
 Route::get('/certificate/{event}', 'TicketsController@pdfcertificate')->name('event.pdfcertificate');
+Route::get('/participants/{event}', 'ParticipantsController@pdfparticipants')->name('event.pdfparticipants');
 
 
 // routes for organizer:

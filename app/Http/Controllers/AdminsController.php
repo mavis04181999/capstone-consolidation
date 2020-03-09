@@ -39,7 +39,7 @@ class AdminsController extends Controller
 
         if($countDepartment > 0) {
             $this->syncEvent();
-
+            
             $users = User::user()->latest()->get();
             $organizers = User::organizer()->latest()->get();
             $departments = Department::latest()->get();
@@ -60,7 +60,7 @@ class AdminsController extends Controller
 
         $this->syncUser();
 
-        $users = User::user()->latest()->get();
+        $users = User::with('department','course', 'section')->user()->latest()->get();
         $departments = Department::latest()->get();
         $courses = Course::all();
         $sections = Section::all();
@@ -72,7 +72,7 @@ class AdminsController extends Controller
 
         $this->syncOrganizer();
 
-        $organizers = User::organizer()->latest()->get();
+        $organizers = User::with('department', 'course', 'section')->organizer()->latest()->get();
         $departments = Department::latest()->get();
         $courses = Course::all();
         $sections = Section::all();

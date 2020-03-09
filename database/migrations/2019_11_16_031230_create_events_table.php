@@ -34,7 +34,7 @@ class CreateEventsTable extends Migration
             $table->string('max_participants')->nullable();
             $table->string('allow_prereg')->nullable();
             $table->string('prereg_slot')->nullable();
-            $table->string('prereg_validity');
+            $table->string('prereg_validity')->nullable();
             $table->string('fee')->nullable();
 
             $table->string('form_type')->nullable();

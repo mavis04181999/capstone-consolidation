@@ -1,58 +1,46 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Event Certificate</title>
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<style>
+  *{
+    padding: 0;
+    margin: 0;
+  }
+  #certificate-img {
+    margin-top: 1em;
+    width: 100%;
+    background-size: cover;
+    background-position: center;
     
-    <title>Capstone Perspiration</title>
-  </head>
-  <style>
-      * {
-          margin: 0;
-          padding: 0;
-      }
-      .certificate {
-        width: 100%;
-      }
-      .showcase {
-        background-size: cover;
-        background-position: center;
-        /* height: 100vh; */
-        
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        
-        text-align: center;
-        /* padding: 0 20px; */
-      }
-  </style>
-  <body>
+  }
+  #certificate {
+    /* background-image: url('') */
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    text-align: center;
+  }
+  #certificate h1 {
+    margin-top: 625px;
+    margin-left: 525px;
+    font-size: 51px;
+  }
+</style>
+<body>
 
-    <div class="header-wrapper">
+  <section id="certificate">
+    <img id="certificate-img" src="storage/event-certificate/{{ $event->event_certificate }}">
+    <h1>{{ $participant->certificate_name }}</h1>
+  </section>
 
-    </div>
-
-    <div class="body-wrapper">
-        <div class="showcase mt-4">
-            <img class="certificate" src="storage/event-certificate/{{ $event->event_certificate }}" alt="">
-            <h2 style=" margin-top: 575px; margin-right: 250px;;" class="float-right certificate-name">{{ $participant->certificate_name }}</h2>
-        </div>
-    </div>
-
-    <div class="footer-wrapper">
-
-    </div>
-
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-  </body>
+</body>
 </html>

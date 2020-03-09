@@ -27,7 +27,6 @@ class StoreEventRequest extends FormRequest
             'event_name' => ['required', 'min: 3', 'unique:events,event_name'],
             'organizer_id' => ['required', 'numeric', 'exists:users,id'],
             'location' => ['sometimes', 'nullable', 'min:3'],
-            'event_type' => ['required', 'numeric'],
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date'],
             'department_id' => ['sometimes', 'nullable', 'numeric', 'exists:departments,id'],
